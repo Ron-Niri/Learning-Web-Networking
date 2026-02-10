@@ -1,31 +1,21 @@
 import socket, threading, datetime, os # uses os instead of dotenv for using only built in libraries
 
 
-def get_private_ip():
-    """
-    Attempts to get the private IP address of the local machine.
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        try:
-            s.connect(('1.1.1.1', 80)) # Connect to a public IP address just to get the socket's ip addr - in this case, used cloudflares's dns server
-            ip_address = s.getsockname()[0] # Get the socket's ip addr
-        except socket.error:
-            ip_address = '127.0.0.1'
-    return ip_address
-
-HOST = os.getenv('HOST') or get_private_ip()
+ACCESS_HOST = os.getenv('HOST',"localhost")
+BIND_HOST = "0.0.0.0"
 PORT = int(os.getenv('PORT') or 8080) # TODO: 80 will require admin permissions in linux and that's a headace for another time... although it should be simple enough (added as todo)...
 class WebServe:
     def __init__(self, htmlMsg,showTimestamp=False):
         self.showTimestamp = showTimestamp
         self.htmlMsg = htmlMsg
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((HOST, PORT))
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # allows the server to be restarted without waiting for the port to be released
+        self.server.bind((BIND_HOST, PORT))
         self.server.listen(5)
-        if any(HOST.startswith(p) for p in ("192.168.", "10.", "172.", "127.0.0.1")): # if it's localhost then http, else https and no need for port, coolify handles that.
-            print(f"Server started on http://{HOST}:{PORT}")
+        if ACCESS_HOST in ("localhost", "127.0.0.1") or ACCESS_HOST.startswith(("192.168.", "10.", "172.")):
+            print(f"Server started on http://{ACCESS_HOST}:{PORT}")
         else:
-            print(f"Server started on https://{HOST}")
+            print(f"Server available at https://{ACCESS_HOST}")
 
     def handle_client(self, client_socket):   
         request = client_socket.recv(1024).decode() # receive request and cleares buffer... appearntly important.

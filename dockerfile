@@ -6,6 +6,10 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 # Copy the simple python web server
 COPY main.py .
+
+# Copy the static files
+COPY static/ ./static/
+
 # Expose port Coolify will route
 EXPOSE 8080
 # Runnnnnnn

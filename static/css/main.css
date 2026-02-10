@@ -1,0 +1,103 @@
+:root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --accent: #58a6ff;
+    --text: #c9d1d9;
+    --code-bg: #010409;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+h1 { color: var(--accent); }
+
+.code-section {
+    background: var(--card);
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s;
+}
+
+.code-section:hover {
+    transform: scale(1.01);
+}
+
+code {
+    display: block;
+    background: var(--code-bg);
+    padding: 10px;
+    border-radius: 4px;
+    color: #ff7b72;
+    margin-bottom: 10px;
+    overflow-x: auto;
+}
+
+.explanation {
+    font-size: 0.95rem;
+    color: #8b949e;
+}
+
+.highlight {
+    color: var(--accent);
+    font-weight: bold;
+}
+.github-button {
+    /* Layout & Alignment */
+    display: inline-flex;
+    align-items: center;    /* Vertical center */
+    justify-content: center; /* Horizontal center */
+    gap: 8px;
+    
+    /* Dimensions & Spacing */
+    min-width: 140px; /* Optional: ensures a consistent look */
+    padding: 5px 16px;
+    margin: 20px;
+    
+    /* Typography */
+    color: #768390; /* GitHub Dark text color */
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    text-decoration: none;
+    
+    /* Colors & Borders */
+    background-color: #000308; /* Dark mode button surface */
+    border: 1px solid rgba(205, 217, 229, 0.1);
+    border-radius: 6px;
+    
+    /* Interaction */
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.github-button svg {
+    fill: #adbac7; /* Matches text color */
+}
+
+.github-button:hover {
+    background-color: #010409; /* Lighter gray-blue on hover */
+    border-color: #768390;
+    color: #cdd9e5; /* Brightens text on hover */
+}
+
+.github-button:hover svg {
+    fill: #cdd9e5;
+}
+
+.github-button:active {
+    background-color: #3d444d;
+    border-color: #636e7b;
+}

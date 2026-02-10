@@ -16,7 +16,8 @@ def get_private_ip():
 HOST = os.getenv('HOST') or get_private_ip()
 PORT = int(os.getenv('PORT') or 8080) # TODO: 80 will require admin permissions in linux and that's a headace for another time... although it should be simple enough (added as todo)...
 class WebServe:
-    def __init__(self, htmlMsg):
+    def __init__(self, htmlMsg,showTimestamp=False):
+        self.showTimestamp = showTimestamp
         self.htmlMsg = htmlMsg
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((HOST, PORT))
@@ -26,10 +27,14 @@ class WebServe:
         else:
             print(f"Server started on https://{HOST}")
 
-    def handle_client(self, client_socket):
-        request = client_socket.recv(1024).decode()
-        print(request)
-        client_socket.sendall(f"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n{self.htmlMsg}".encode())
+    def handle_client(self, client_socket):   
+        request = client_socket.recv(1024).decode() # receive request and cleares buffer... appearntly important.
+        response_body = self.htmlMsg 
+        if self.showTimestamp:
+            timestamp = datetime.datetime.now().strftime('%H:%M:%S')
+            response_body += f"<p>User requested from server at: {timestamp}</p>"
+        response = f"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n{response_body}"
+        client_socket.sendall(response.encode())
         client_socket.close()
 
     def run(self):
@@ -51,5 +56,5 @@ class WebServe:
             print("Server socket closed.")
 
 if __name__ == "__main__":
-    server = WebServe(htmlMsg=f"<h1>Hello, World! (Kinda overused not gonna lie)</h1> Timetamp of server launch: {datetime.datetime.now().strftime('%H:%M:%S')}")
+    server = WebServe(htmlMsg=f"<h1>Hello, World! (Kinda overused not gonna lie)</h1>",showTimestamp=True)
     server.run()

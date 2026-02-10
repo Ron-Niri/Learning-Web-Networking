@@ -31,11 +31,22 @@ class WebServe:
         client_socket.close()
 
     def run(self):
-        while True:
-            client_socket, addr = self.server.accept()
-            print(f"Accepted connection from {addr}")
-            client_handler = threading.Thread(target=self.handle_client, args=(client_socket,))
-            client_handler.start()
+        self.server.settimeout(1.0)
+        print("Press CTRL+C to terminate server.")
+        try:
+            while True:
+                try:
+                    client_socket, addr = self.server.accept()
+                    print(f"Accepted connection from {addr}")
+                    client_handler = threading.Thread(target=self.handle_client, args=(client_socket,))
+                    client_handler.start()
+                except socket.timeout:
+                    continue
+        except KeyboardInterrupt:
+            print("Server terminated.")
+        finally:
+            self.server.close()
+            print("Server socket closed.")
 
 if __name__ == "__main__":
     server = WebServe(htmlMsg=f"<h1>Hello, World!<h1> Timetamp: {datetime.datetime.now().strftime('%H:%M:%S')}")

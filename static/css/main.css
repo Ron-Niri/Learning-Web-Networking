@@ -14,7 +14,10 @@ body {
     margin: 0;
     padding: 20px;
 }
-
+p {
+    text-align: center;
+    margin-bottom: 20px;
+}
 header {
     text-align: center;
     margin-bottom: 40px;
@@ -100,4 +103,17 @@ code {
 .github-button:active {
     background-color: #3d444d;
     border-color: #636e7b;
+}
+video {
+    display: block;
+    max-width: 800px; /* Limits size on large screens */
+    width: 100%;      /* Makes it responsive on mobile */
+    margin: 0 auto 40px auto; /* Centers the video and adds bottom spacing */
+    
+    background: var(--code-bg);
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    
+    outline: none;
 }

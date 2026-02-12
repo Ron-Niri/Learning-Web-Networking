@@ -23,7 +23,13 @@ class WebServe:
 
     def handle_client(self, client_socket):
         try:
-            request = client_socket.recv(1024).decode()
+            request_data = b""
+            while True:
+                chunk = client_socket.recv(4096)
+                request_data += chunk
+                if b"\r\n\r\n" in request_data or not chunk:
+                    break
+            request = request_data.decode(errors='ignore')
             if not request:
                 return
             # parse request
@@ -52,7 +58,7 @@ class WebServe:
                 msg = "<h1>404 Not Found</h1><p>The resource you requested does not exist.</p>".encode()
                 header = f"HTTP/1.1 404 NOT FOUND\r\nContent-Type: text/html\r\nContent-Length: {len(msg)}\r\n\r\n"
                 client_socket.sendall(header.encode() + msg)
-
+                client_socket.shutdown(socket.SHUT_WR)
         except Exception as e:
             print(f"Error handling request: {e}")
         finally:

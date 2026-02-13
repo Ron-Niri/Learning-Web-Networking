@@ -1,5 +1,5 @@
-import socket, threading, os
-
+import socket, threading, os, dotenv
+dotenv.load_dotenv() # made it actually load from .env file - forgot earlier that os.getenv doesn't auto-load the .env file.
 ACCESS_HOST = os.getenv('HOST', "localhost")
 BIND_HOST = "0.0.0.0"
 PORT = int(os.getenv('PORT') or 8080)

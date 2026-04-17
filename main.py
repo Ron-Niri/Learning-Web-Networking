@@ -1,22 +1,24 @@
 import socket, threading, os, json
 # read .env file and set in environ for os.
 env_vars = {}
-with open(".env", 'r') as file:
-    for line in file:
-        line = line.strip()
+try:
+    with open(".env", 'r') as file:
+        for line in file:
+            line = line.strip()
 
-        if not line or line.startswith("#"):
-            continue
+            if not line or line.startswith("#"):
+                continue
 
-        if "=" in line:
-            key, value = line.split("=", 1)
-            env_vars[key.strip().replace("'", '').replace('"', '')] = value.strip().replace("'", '').replace('"', '')
+            if "=" in line:
+                key, value = line.split("=", 1)
+                env_vars[key.strip().replace("'", '').replace('"', '')] = value.strip().replace("'", '').replace('"', '')
 
-for env_key, env_value in env_vars.items():
-    os.environ[env_key] = env_value
+    for env_key, env_value in env_vars.items():
+        os.environ[env_key] = env_value
+except FileNotFoundError:
+    print("No .env file found, using default settings.")
 
-
-ACCESS_HOST = os.getenv('HOST', "localhost")
+ACCESS_HOST = os.getenv('HOST', "basicweb.ronniri.com")
 BIND_HOST = "0.0.0.0"
 PORT = int(os.getenv('PORT') or 8080)
 STATIC_DIR = "static"

@@ -1,2 +1,3 @@
 # following line is for security reasons, although no secrets are in it currently- good practice anyway :)
 .env 
+server.log

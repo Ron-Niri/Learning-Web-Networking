@@ -30,14 +30,19 @@ class WebServe:
         self.routes = {
             "/api/ping": self.handle_ping,
             "/api/info": self.handle_info,
+            "/api/": lambda req: ({"error": "yeah this ain't a thing..."}, 404)
         }
         print(f"Server started on http://{ACCESS_HOST}:{PORT}")
-
+    def log(self, message):
+        with open("server.log", "a") as log_file:
+            log_file.write(f"[{threading.current_thread().name}] {message}\n")
     def handle_ping(self, request_data):
         return {"message": "pong", "status": "success"}, 200
+        self.log("Handled ping request")
 
     def handle_info(self, request_data):
         return {"version": "1.1.0", "server": ACCESS_HOST}, 200
+        self.log("Handled info request")
     
     def send_json_response(self, client_socket, data, status_code=200):
         content = json.dumps(data).encode()
@@ -49,6 +54,7 @@ class WebServe:
             f"Connection: close\r\n\r\n"
         )
         client_socket.sendall(header.encode() + content)
+        self.log(f"Sent JSON response with status {status_code}")
 
     def get_content_type(self, file_path): # instead of mimetypes import
         if file_path.endswith(".html"): return "text/html"
@@ -102,12 +108,14 @@ class WebServe:
                         f"Connection: close\r\n\r\n"
                     )
                     client_socket.sendall(header.encode() + content)
+                    self.log(f"Served file: {requested_path}")
                 else:
                     # 404 res
                     msg = "<h1>404 Not Found</h1><p>The resource you requested does not exist.</p>".encode()
                     header = f"HTTP/1.1 404 NOT FOUND\r\nContent-Type: text/html\r\nContent-Length: {len(msg)}\r\n\r\n"
                     client_socket.sendall(header.encode() + msg)
                     client_socket.shutdown(socket.SHUT_WR)
+                    self.log(f"User 404'd at {requested_path}")
         except Exception as e:
             print(f"Error handling request: {e}")
         finally:
@@ -119,7 +127,9 @@ class WebServe:
             while True:
                 try:
                     client_socket, addr = self.server.accept()
-                    threading.Thread(target=self.handle_client, args=(client_socket,), daemon=True).start()
+                    t=threading.Thread(target=self.handle_client, args=(client_socket,), daemon=True)
+                    t.start()
+                    self.log(f"Connection from {addr}")
                 except socket.timeout:
                     continue
         except KeyboardInterrupt:
@@ -132,4 +142,6 @@ if __name__ == "__main__":
         os.makedirs(STATIC_DIR)
     
     server = WebServe()
+    log_message = f"Server started on http://{ACCESS_HOST}:{PORT}"
+    server.log(log_message)
     server.run()
